@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # --- BASE DE DATOS (MongoDB) ---
+  mongodb:
+    image: mongo:latest
+    container_name: mongo_superheroes
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  # --- BACKEND (Node.js + Express) ---
+  backend:
+    build: ./backend        # Busca la carpeta "backend" aquí al lado
+    container_name: backend_superheroes
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app      # Espejo mágico: Windows <-> Docker
+      - /app/node_modules   # Protege las librerías internas
+    environment:
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+    depends_on:
+      - mongodb
+
+  # --- FRONTEND (React + Vite) ---
+  frontend:
+    build: ./frontend       # Busca la carpeta "frontend"
+    container_name: frontend_superheroes
+    ports:
+      - "5173:5173"         # Puerto de Vite
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    # Estos dos comandos son vitales para que no se cierre en Windows:
+    stdin_open: true
+    tty: true
+
+volumes:
+  mongo_data:

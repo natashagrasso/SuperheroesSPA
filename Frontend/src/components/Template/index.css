@@ -1,0 +1,37 @@
+/* Contenedor principal del detalle */
+.superheroe {
+  margin-top: 60px;
+  margin-left: 15%;
+  display: flex; /* Esto pone la foto y el formulario lado a lado */
+  width: 60%;
+  gap: 30px; /* Espacio entre la foto y el form */
+}
+
+/* El formulario */
+.superheroe-data {
+  margin-left: 50px;
+  flex: 1; /* Ocupa el espacio restante */
+}
+
+/* Los inputs del formulario */
+.inputs {
+  width: 100%; /* Ocupa todo el ancho disponible */
+  margin-top: 20px;
+}
+
+/* Botón de eliminar (para separarlo del de editar) */
+.boton-eliminar {
+  margin-left: 10px;
+}
+
+/* Ajuste para pantallas pequeñas (móviles) */
+@media (max-width: 768px) {
+  .superheroe {
+    flex-direction: column; /* Pone uno abajo del otro en celular */
+    width: 90%;
+    margin-left: 5%;
+  }
+  .superheroe-data {
+    margin-left: 0;
+  }
+}
