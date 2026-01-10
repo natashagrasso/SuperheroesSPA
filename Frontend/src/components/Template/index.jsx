@@ -9,20 +9,18 @@ import { Carousels } from '../Carrousel/index'
 import './index.css'
 import Swal from 'sweetalert2'
 
+// 1. IMPORTACIÓN DE LOGOS LOCALES
+import marvelLogoImg from '../../assets/logos/marvel.png'
+import dcLogoImg from '../../assets/logos/dc.png'
+
 export function Template() {
   const [superheroe, setSuperheroe] = useState(null)
   const [loading, setLoading] = useState(true)
-
   const [modoEdicion, setModoEdicion] = useState(false)
 
   const { id } = useParams()
   const form = useRef()
   const navigate = useNavigate()
-
-  const logoMarvel =
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Marvel_Logo.svg/320px-Marvel_Logo.svg.png'
-  const logoDC =
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/DC_Comics_logo.svg/240px-DC_Comics_logo.svg.png'
 
   useEffect(() => {
     if (!id || id === 'undefined') {
@@ -75,9 +73,12 @@ export function Template() {
     })
   }
 
+  // 2. USO DE VARIABLES LOCALES
   const getLogo = () => {
-    const casa = superheroe?.casa ? superheroe.casa.toLowerCase() : ''
-    return casa === 'marvel' ? logoMarvel : casa === 'dc' ? logoDC : null
+    const casa = superheroe?.casa ? superheroe.casa.toLowerCase().trim() : ''
+    if (casa === 'marvel') return marvelLogoImg
+    if (casa === 'dc') return dcLogoImg
+    return null
   }
 
   if (loading)
@@ -125,9 +126,10 @@ export function Template() {
                 </svg>
               </button>
               <h2 className="fw-bold mb-0 text-uppercase">
-                {modoEdicion ? 'Editar Perfil' : 'Ficha Técnica'}
+                {modoEdicion ? 'Editar Perfil' : 'Descripcion del Personajes'}
               </h2>
             </div>
+            {/* Logo local optimizado */}
             {getLogo() && (
               <img
                 src={getLogo()}
@@ -138,7 +140,7 @@ export function Template() {
           </div>
 
           {modoEdicion ? (
-            /* --- MODO EDICIÓN (FORMULARIO) --- */
+            /* MODO EDICIÓN */
             <Form ref={form} onSubmit={handleSubmit} className="flex-grow-1">
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold small text-muted">
@@ -234,76 +236,67 @@ export function Template() {
               </div>
             </Form>
           ) : (
-            /* --- MODO LECTURA (ALINEADO LATERALMENTE) --- */
+            /* MODO LECTURA - CAMBIO APLICADO AQUÍ */
             <div className="modo-lectura d-flex flex-column h-100">
-              <div className="mb-3 d-flex align-items-center">
-                <span
-                  className="fw-bold text-uppercase text-muted small me-3"
-                  style={{ width: '100px' }}>
-                  Nombre:
-                </span>
-                <span className="fs-5 fw-bold text-dark">
-                  {superheroe.nombre}
-                </span>
+              <div className="row mb-3">
+                <div className="col-6 d-flex align-items-center">
+                  <h6 className="fw-bold text-muted small text-uppercase mb-0 me-2">
+                    Nombre:
+                  </h6>
+                  <p className="fs-5 fw-bold text-dark mb-0">
+                    {superheroe.nombre}
+                  </p>
+                </div>
+                <div className="col-6 d-flex align-items-center">
+                  <h6 className="fw-bold text-muted small text-uppercase mb-0 me-2">
+                    Nombre Real:
+                  </h6>
+                  <p className="fs-5 text-dark mb-0 fst-italic">
+                    {superheroe.nombre_pers || '-'}
+                  </p>
+                </div>
               </div>
 
-              <div className="mb-3 d-flex align-items-center">
-                <span
-                  className="fw-bold text-uppercase text-muted small me-3"
-                  style={{ width: '100px' }}>
-                  Nombre Real:
-                </span>
-                <span className="fs-5 text-dark fst-italic">
-                  {superheroe.nombre_pers || '-'}
-                </span>
+              <div className="row mb-3">
+                <div className="col-4 d-flex align-items-center">
+                  <h6 className="fw-bold text-muted small text-uppercase mb-0 me-2">
+                    Año:
+                  </h6>
+                  <p className="fs-5 text-dark mb-0">
+                    {superheroe.año_aparicion}
+                  </p>
+                </div>
+                <div className="col-8 d-flex align-items-center">
+                  <h6 className="fw-bold text-muted small text-uppercase mb-0 me-2">
+                    Casa:
+                  </h6>
+                  <span
+                    className={`badge ${
+                      superheroe.casa === 'DC' ? 'bg-primary' : 'bg-danger'
+                    } fs-6`}>
+                    {superheroe.casa}
+                  </span>
+                </div>
               </div>
 
-              <div className="mb-3 d-flex align-items-center">
-                <span
-                  className="fw-bold text-uppercase text-muted small me-3"
-                  style={{ width: '100px' }}>
-                  Año:
-                </span>
-                <span className="fs-5 text-dark">
-                  {superheroe.año_aparicion}
-                </span>
-              </div>
-
-              <div className="mb-3 d-flex align-items-center">
-                <span
-                  className="fw-bold text-uppercase text-muted small me-3"
-                  style={{ width: '100px' }}>
-                  Casa:
-                </span>
-                <span
-                  className={`badge ${
-                    superheroe.casa === 'DC' ? 'bg-primary' : 'bg-danger'
-                  } fs-6`}>
-                  {superheroe.casa}
-                </span>
-              </div>
-
-              <div className="mb-3 mt-3">
-                <h6 className="fw-bold text-uppercase text-muted small border-bottom pb-1">
+              <div className="mb-3">
+                <h6 className="fw-bold text-muted small text-uppercase border-bottom pb-1">
                   Biografía
                 </h6>
-                <p
-                  className="text-secondary mt-2"
-                  style={{ lineHeight: '1.6' }}>
+                <p className="text-secondary" style={{ lineHeight: '1.6' }}>
                   {superheroe.biografia || 'Sin información biográfica.'}
                 </p>
               </div>
 
               <div className="mb-3">
-                <h6 className="fw-bold text-uppercase text-muted small border-bottom pb-1">
+                <h6 className="fw-bold text-muted small text-uppercase border-bottom pb-1">
                   Equipamiento
                 </h6>
-                <p className="text-dark fw-medium mt-2">
+                <p className="text-dark fw-medium">
                   {superheroe.equipamiento || 'Ninguno.'}
                 </p>
               </div>
 
-              {/* Botones de Acción */}
               <div className="mt-auto pt-4 border-top d-flex justify-content-between align-items-center">
                 <Button
                   variant="outline-danger"
