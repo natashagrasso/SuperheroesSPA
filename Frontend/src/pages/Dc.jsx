@@ -1,40 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import { getDc } from '../services/getDc'
-import { Superheroe } from '../components/Superheroe/index'
+import React from 'react'
+// Corrección: Agregamos '/index' al final para asegurar que encuentre el archivo
+import { ListaSuperheroe } from '../components/ListaSuperheroe/index'
 
 export function Dc() {
-  const [superDc, setSuperDc] = useState([])
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    getDc()
-      .then(res => {
-        setSuperDc(res)
-        setLoading(true)
-      })
-      .catch(err => console.error(err))
-  }, [])
-
   return (
-    <section
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        padding: '20px',
-        gap: '15px',
-      }}>
-      {loading ? (
-        superDc.length > 0 ? (
-          superDc.map(supers => (
-            <Superheroe key={supers.id} superheroe={supers} />
-          ))
-        ) : (
-          <p className="text-center mt-5">No se encuentran superhéroes de DC</p>
-        )
-      ) : (
-        <p className="text-center mt-5">Cargando...</p>
-      )}
-    </section>
+    <>
+      <div className="container pt-4">
+        <h1 className="text-center mb-4 fw-bold text-primary">
+          Universo DC 🔵
+        </h1>
+        {/* Pasamos la prop filtroCasa para mostrar solo DC */}
+        <ListaSuperheroe filtroCasa="DC" />
+      </div>
+    </>
   )
 }
