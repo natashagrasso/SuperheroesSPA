@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-// Ahora esta importación funcionará correctamente
 import { getSuperheroes } from '../../services/getSuperheroes'
 import { Link } from 'react-router-dom'
 
@@ -7,6 +6,9 @@ export function ListaSuperheroe({ filtroCasa }) {
   const [superheroes, setSuperheroes] = useState([])
   const [loading, setLoading] = useState(true)
   const [busqueda, setBusqueda] = useState('')
+
+  // Estado para la paginación (Empieza mostrando 8)
+  const [visibleCount, setVisibleCount] = useState(8)
 
   useEffect(() => {
     getSuperheroes()
@@ -24,27 +26,31 @@ export function ListaSuperheroe({ filtroCasa }) {
       })
   }, [])
 
+  // Reiniciar paginación al cambiar filtro o búsqueda
+  useEffect(() => {
+    setVisibleCount(8)
+  }, [filtroCasa, busqueda])
+
   const getBadgeColor = casa => {
     const casaNormalizada = casa ? casa.toLowerCase().trim() : ''
-    if (casaNormalizada === 'dc') return '#0d6efd' // Azul
-    if (casaNormalizada === 'marvel') return '#dc3545' // Rojo
-    return '#6c757d' // Gris
+    if (casaNormalizada === 'dc') return '#0d6efd'
+    if (casaNormalizada === 'marvel') return '#dc3545'
+    return '#6c757d'
   }
 
-  // --- LÓGICA DE FILTRADO ---
+  // Filtros
   const heroesFiltrados = superheroes.filter(hero => {
-    // 1. Filtro por nombre (Buscador)
     const coincideNombre = hero.nombre
       ?.toLowerCase()
       .includes(busqueda.toLowerCase())
-
-    // 2. Filtro por Casa (si viene la prop filtroCasa)
     const coincideCasa = filtroCasa
       ? hero.casa?.toLowerCase() === filtroCasa.toLowerCase()
       : true
-
     return coincideNombre && coincideCasa
   })
+
+  // Corte para mostrar solo los visibles
+  const heroesParaMostrar = heroesFiltrados.slice(0, visibleCount)
 
   if (loading) {
     return (
@@ -55,8 +61,8 @@ export function ListaSuperheroe({ filtroCasa }) {
   }
 
   return (
-    <div className="container mt-4">
-      {/* Barra de Búsqueda */}
+    <div className="container mt-4 mb-5">
+      {/* Buscador */}
       <div className="row mb-4 justify-content-center">
         <div className="col-12 col-md-6">
           <div className="input-group shadow-sm">
@@ -72,14 +78,11 @@ export function ListaSuperheroe({ filtroCasa }) {
         </div>
       </div>
 
-      {/* Tarjetas */}
+      {/* Grilla de Tarjetas */}
       <div className="row g-4">
-        {heroesFiltrados.length > 0 ? (
-          heroesFiltrados.map(hero => {
+        {heroesParaMostrar.length > 0 ? (
+          heroesParaMostrar.map(hero => {
             const idHeroe = hero._id || hero.id
-
-            // --- CORRECCIÓN IMAGEN HOME ---
-            // Tomamos la primera imagen si hay varias separadas por coma
             const primeraImagen = hero.images
               ? hero.images.split(',')[0].trim()
               : 'https://via.placeholder.com/300x400?text=Sin+Imagen'
@@ -144,6 +147,16 @@ export function ListaSuperheroe({ filtroCasa }) {
           </div>
         )}
       </div>
+
+      {visibleCount < heroesFiltrados.length && (
+        <div className="text-center mt-5">
+          <button
+            className="btn btn-outline-dark px-5 py-2 rounded-pill shadow-sm"
+            onClick={() => setVisibleCount(prev => prev + 4)}>
+            Ver más personajes 🡣
+          </button>
+        </div>
+      )}
     </div>
   )
 }
